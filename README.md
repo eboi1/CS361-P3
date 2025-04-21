@@ -13,12 +13,12 @@ useful in explaining the functions of a CPU inside a computer.
 ## Reflection ~ Andrew Kobus
 
 ## Reflection ~ Eric Johnson
-
+I really like this project since I provided a hands-on opportunity to become more familiar with turing machines.  Altough there are still concepts that I am not completely clear on, I feel much more confident with TMs.  One of the key aspects of this project was ensuring that input validation errors are handled correctly and gracefully as well as handling parsing errors in a similar way.  It helped to write descriptive error statements to aid in debugging the program. I think it would fun to re work this project in the future and try different methods of optimizing the program when handling much larger .txt input files.  
 
 
 ## Compiling and Using
 
-* To Compile on Onyx:
-    * 
-* To Run on Onyx:
-    * 
+* To Compile:
+    * javac tm/TMSimulator.java
+* To Run:
+    * java tm/TMSimulator [_file_name_here_].txt
