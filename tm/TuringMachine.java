@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Represents a bi-infinite Turing Machine
  * 
- * @author Andrew Kobus
+ * @author Andrew Kobus, Eric Johnson
  */
 public class TuringMachine {
     private int numStates;
@@ -37,7 +37,23 @@ public class TuringMachine {
      * @param move        the direction to move the head (L or R)
      */
     public void addTransition(int fromState, int onSymbol, int nextState, int writeSymbol, char move) {
+        if (fromState < 0 || fromState >= numStates || nextState < 0 || nextState >= numStates) {
+            throw new IllegalArgumentException("Invalid state: must be in range 0 to " + (numStates - 1));
+        }
+
+        if (onSymbol < 0 || writeSymbol < 0) {
+            throw new IllegalArgumentException("Symbols must be non-negative integers.");
+        }
+
+        if (move != 'L' && move != 'R') {
+            throw new IllegalArgumentException("Invalid move direction: " + move + ". Must be 'L' or 'R'.");
+        }
+
         String key = fromState + "," + onSymbol;
+        if (transitions.containsKey(key)) {
+            throw new IllegalArgumentException("Duplicate transition for key: " + key);
+        }
+    
         transitions.put(key, new Transition(nextState, writeSymbol, move));
     }
 
@@ -50,8 +66,13 @@ public class TuringMachine {
         tape.resetHead();
 
         for (int i = 0; i < input.length(); i++) {
-            // Convert char to int symbol
-            int symbol = Character.getNumericValue(input.charAt(i));
+            char c = input.charAt(i);
+
+            if (!Character.isDigit(c)) {
+                throw new IllegalArgumentException("Invalid input character: '" + c + "'. Only digits are allowed.");
+            }
+    
+            int symbol = Character.getNumericValue(c);
             tape.write(symbol);
             tape.moveRight();
         }

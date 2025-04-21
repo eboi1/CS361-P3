@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Represents a bi-infinite tape for the Turing Machine
  * 
- * @author Andrew Kobus
+ * @author Andrew Kobus, Eric Johnson
  */
 public class BiInfiniteTape {
     private Map<Integer, Integer> tape; // Position -> Symbol
@@ -80,6 +80,9 @@ public class BiInfiniteTape {
      * @return a string representation of the visited tape cells
      */
     public String getVisitedContent() {
+        if (minVisited > maxVisited) {
+            throw new IllegalStateException("Invalid tape range: minVisited > maxVisited");
+        }
         StringBuilder result = new StringBuilder();
 
         for (int i = minVisited; i <= maxVisited; i++) {

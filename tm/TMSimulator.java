@@ -1,13 +1,14 @@
 package tm;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
 /**
  * TMSimulator simulates a bi-infinite Turing Machine
  * 
- * @author Andrew Kobus
+ * @author Andrew Kobus, Eric Johnson
  */
 public class TMSimulator {
 
@@ -45,13 +46,31 @@ public class TMSimulator {
      * @throws IOException if an error occurs while reading the file
      */
     private static TuringMachine parseTM(String filename) throws IOException {
+
+        // Check if the file exists and is readable
+        File file = new File(filename);
+        if (!file.exists() || !file.canRead()) {
+            System.err.println("Error: Cannot read file '" + filename + "'");
+            System.exit(1);
+        }
+
         BufferedReader reader = new BufferedReader(new FileReader(filename));
 
         // Parse number of states
-        int numStates = Integer.parseInt(reader.readLine().trim());
+        String line = reader.readLine();
+        if (line == null) {
+            reader.close();
+            throw new IOException("Missing number of states line.");
+        }
+        int numStates = Integer.parseInt(line.trim());
 
         // Parse number of symbols in Sigma
-        int numSymbols = Integer.parseInt(reader.readLine().trim());
+        line = reader.readLine();
+        if (line == null) {
+            reader.close();
+            throw new IOException("Missing number of symbols line.");
+        }
+        int numSymbols = Integer.parseInt(line.trim());
 
         // Create a new Turing Machine
         TuringMachine tm = new TuringMachine(numStates, numSymbols);
@@ -62,11 +81,21 @@ public class TMSimulator {
                 String transitionLine = reader.readLine().trim();
                 String[] parts = transitionLine.split(",");
 
-                int nextState = Integer.parseInt(parts[0]);
-                int writeSymbol = Integer.parseInt(parts[1]);
-                char move = parts[2].charAt(0);
-
-                tm.addTransition(state, symbol, nextState, writeSymbol, move);
+                try {
+                    int nextState = Integer.parseInt(parts[0]);
+                    int writeSymbol = Integer.parseInt(parts[1]);
+                    char move = parts[2].charAt(0);
+                
+                    // Validate direction
+                    if (move != 'L' && move != 'R' && move != 'S') {
+                        throw new IOException("Invalid move direction '" + move + "' at state " + state + ", symbol " + symbol);
+                    }
+                
+                    tm.addTransition(state, symbol, nextState, writeSymbol, move);
+                } catch (NumberFormatException e) {
+                    reader.close();
+                    throw new IOException("Invalid number format in transition: " + transitionLine, e);
+                }
             }
         }
 
